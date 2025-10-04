@@ -4,10 +4,10 @@ const { getUsers, createUser } = require('../controllers/userController');
 
 const router = express.Router();
 
-// GET /users
+// GET /api/users
 router.get('/', getUsers);
 
-// POST /users
+// POST /api/users
 router.post('/', createUser);
 
 module.exports = router;

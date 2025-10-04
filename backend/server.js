@@ -1,22 +1,15 @@
 const express = require('express');
-const dotenv = require('dotenv');
-
-dotenv.config();
+const bodyParser = require('body-parser');
+const userRoutes = require('./routes/user');
 
 const app = express();
+app.use(bodyParser.json());
 
-// Middleware đọc JSON
-app.use(express.json());
+// Dùng routes
+app.use('/', userRoutes);
 
-// Import routes
-const userRoutes = require('./routes/user');
-app.use('/users', userRoutes);
-
-// Route test gốc
-app.get('/', (req, res) => {
-  res.send('Backend server is running...');
+// Chạy server
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`✅ Server chạy tại http://localhost:${PORT}`);
 });
-
-// Lắng nghe cổng
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

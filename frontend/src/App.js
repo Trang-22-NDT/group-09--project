@@ -29,3 +29,6 @@ function App() {
 
 // Test squash commit
 export default App;
+console.log("Phiên bản FRONTEND của App.js");
+console.log("Phiên bản BACKEND của App.js");
+ backend

@@ -1,0 +1,7 @@
+{
+  "users": [
+    { "id": 1, "name": "Nguyễn Đoan Trang", "email": "a@example.com" },
+    { "id": 2, "name": "Mai Văn Vàng", "email": "b@example.com" },
+    { "id": 3, "name": "Trần Văn Khánh", "email": "c@example.com" }
+  ]
+}

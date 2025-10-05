@@ -32,3 +32,6 @@ export default App;
 console.log("Phiên bản FRONTEND của App.js");
 console.log("Phiên bản BACKEND của App.js");
  backend
+// Code từ backend
+console.log("Hello from backend branch");
+ backend

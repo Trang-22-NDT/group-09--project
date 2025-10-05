@@ -1,13 +1,10 @@
 import React from "react";
-import UserList from "./components/UserList";
+import ReactDOM from "react-dom/client";
+import App from "./App";
 
-function App() {
-  return (
-    <div>
-      <h1>Demo CRUD với JSON Server</h1>
-      <UserList />
-    </div>
-  );
-}
-
-export default App;
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);

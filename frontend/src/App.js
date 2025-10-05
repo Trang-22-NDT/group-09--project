@@ -30,4 +30,6 @@ function App() {
 // Test squash commit
 export default App;
 console.log("Phiên bản BACKEND của App.js");
+// Code từ backend
+console.log("Hello from backend branch");
 

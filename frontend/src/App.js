@@ -27,4 +27,5 @@ function App() {
   );
 }
 
+// Test squash commit
 export default App;

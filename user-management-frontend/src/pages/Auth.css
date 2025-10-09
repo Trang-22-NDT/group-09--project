@@ -1,0 +1,99 @@
+.auth-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #74ebd5, #acb6e5);
+  font-family: "Segoe UI", sans-serif;
+}
+
+.auth-box {
+  background: #fff;
+  padding: 40px 50px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  width: 380px;
+  text-align: center;
+}
+
+h2 {
+  margin-bottom: 25px;
+  color: #333;
+}
+
+.input-group {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.input-group input:focus {
+  border-color: #74ebd5;
+  outline: none;
+  box-shadow: 0 0 5px rgba(116, 235, 213, 0.5);
+}
+
+.btn-primary {
+  background-color: #74ebd5;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  transition: 0.3s;
+}
+
+.btn-primary:hover {
+  background-color: #6cd2c3;
+}
+
+.switch-link {
+  margin-top: 15px;
+  color: #333;
+}
+
+.switch-link a {
+  color: #74ebd5;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.switch-link a:hover {
+  text-decoration: underline;
+}
+.success-msg {
+  margin-top: 15px;
+  color: green;
+  text-align: center;
+  font-weight: 600;
+}
+
+.avatar-preview {
+  text-align: center;
+  margin: 15px 0;
+}
+
+.avatar-preview img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #66a6ff;
+}

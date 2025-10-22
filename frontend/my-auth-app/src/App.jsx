@@ -7,6 +7,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import ModeratorDashboard from './pages/ModeratorDashboard'
 import ProtectedRoute from './components/ProtectedRoute'
 import TokenStatus from './components/TokenStatus'
+import UserAvatar from './components/UserAvatar'
 import { useAuth } from './context/AuthProvider'
 
 export default function App() {
@@ -38,12 +39,15 @@ export default function App() {
         
         {user ? (
           <>
-            <span style={{marginRight:12, color:'#fff'}}>
-              {user.name} 
-              <span className="px-2 py-1 ml-2 bg-white/20 rounded text-sm">
-                {user.role}
+            <div style={{display:'flex', alignItems:'center', gap:12, marginRight:12}}>
+              <UserAvatar user={user} size="sm" />
+              <span style={{color:'#fff'}}>
+                {user.name} 
+                <span className="px-2 py-1 ml-2 bg-white/20 rounded text-sm">
+                  {user.role}
+                </span>
               </span>
-            </span>
+            </div>
             <button className="btn-ghost" onClick={logout}>Đăng xuất</button>
           </>
         ) : (

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react'
 
-export default function AvatarUpload({ currentAvatar, onUploadSuccess }) {
+export default function AvatarUpload({ currentAvatar, onUploadSuccess, userEmail }) {
   const [preview, setPreview] = useState(currentAvatar || null)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState(null)
@@ -55,9 +55,11 @@ export default function AvatarUpload({ currentAvatar, onUploadSuccess }) {
       // Mock delay
       await new Promise(resolve => setTimeout(resolve, 1500))
 
-      // Mock success - lưu vào localStorage
+      // Mock success - lưu vào localStorage theo email
       const mockAvatarUrl = preview
-      localStorage.setItem('userAvatar', mockAvatarUrl)
+      if (userEmail) {
+        localStorage.setItem(`userAvatar_${userEmail}`, mockAvatarUrl)
+      }
 
       if (onUploadSuccess) {
         onUploadSuccess(mockAvatarUrl)

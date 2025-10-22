@@ -6,6 +6,7 @@ import Profile from './pages/Profile'
 import AdminDashboard from './pages/AdminDashboard'
 import ModeratorDashboard from './pages/ModeratorDashboard'
 import ProtectedRoute from './components/ProtectedRoute'
+import TokenStatus from './components/TokenStatus'
 import { useAuth } from './context/AuthProvider'
 
 export default function App() {
@@ -107,6 +108,9 @@ export default function App() {
           </ProtectedRoute>
         } />
       </Routes>
+      
+      {/* Hiển thị Token Status khi đã đăng nhập */}
+      {user && <TokenStatus />}
     </div>
   )
 }

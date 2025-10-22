@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import api from '../api/axios'
+import { saveTokens, clearTokens, getTokens } from '../utils/tokenUtils'
 
 const AuthContext = createContext()
 
@@ -9,13 +10,15 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const init = async () => {
-      const accessToken = localStorage.getItem('accessToken')
+      const { accessToken } = getTokens()
       if (accessToken) {
         try {
           const res = await api.get('/user/profile')
           setUser(res.data)
         } catch (err) {
+          console.error('Failed to load user profile:', err)
           setUser(null)
+          clearTokens()
         }
       }
       setLoading(false)
@@ -32,12 +35,12 @@ export function AuthProvider({ children }) {
       throw new Error('Email hoặc mật khẩu không đúng')
     }
     
-    // Tạo mock tokens
+    // Tạo mock tokens với expiry time
     const accessToken = 'mock-access-token-' + Date.now()
     const refreshToken = 'mock-refresh-token-' + Date.now()
     
-    localStorage.setItem('accessToken', accessToken)
-    localStorage.setItem('refreshToken', refreshToken)
+    // Sử dụng tokenUtils để lưu
+    saveTokens(accessToken, refreshToken)
     
     // Lưu user với role
     const userData = { 
@@ -77,10 +80,14 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      await api.post('/auth/logout', { refreshToken: localStorage.getItem('refreshToken') })
-    } catch (err) {}
-    localStorage.removeItem('accessToken')
-    localStorage.removeItem('refreshToken')
+      const { refreshToken } = getTokens()
+      if (refreshToken) {
+        await api.post('/auth/logout', { refreshToken })
+      }
+    } catch (err) {
+      console.error('Logout error:', err)
+    }
+    clearTokens()
     setUser(null)
   }
 

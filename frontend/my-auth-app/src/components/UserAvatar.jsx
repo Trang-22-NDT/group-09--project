@@ -4,12 +4,14 @@ export default function UserAvatar({ user, size = 'md', className = '' }) {
   const [avatar, setAvatar] = useState(null)
 
   useEffect(() => {
-    // Load avatar from localStorage
-    const savedAvatar = localStorage.getItem('userAvatar')
-    if (savedAvatar) {
-      setAvatar(savedAvatar)
+    // Load avatar from localStorage theo email của user
+    if (user?.email) {
+      const savedAvatar = localStorage.getItem(`userAvatar_${user.email}`)
+      if (savedAvatar) {
+        setAvatar(savedAvatar)
+      }
     }
-  }, [])
+  }, [user])
 
   const sizeClasses = {
     sm: 'w-8 h-8',

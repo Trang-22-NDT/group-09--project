@@ -8,12 +8,14 @@ export default function Profile() {
   const [avatar, setAvatar] = useState(null)
 
   useEffect(() => {
-    // Load avatar from localStorage
-    const savedAvatar = localStorage.getItem('userAvatar')
-    if (savedAvatar) {
-      setAvatar(savedAvatar)
+    // Load avatar from localStorage theo email
+    if (user?.email) {
+      const savedAvatar = localStorage.getItem(`userAvatar_${user.email}`)
+      if (savedAvatar) {
+        setAvatar(savedAvatar)
+      }
     }
-  }, [])
+  }, [user])
 
   const handleAvatarUpload = (newAvatarUrl) => {
     setAvatar(newAvatarUrl)
@@ -42,6 +44,7 @@ export default function Profile() {
           <AvatarUpload 
             currentAvatar={avatar}
             onUploadSuccess={handleAvatarUpload}
+            userEmail={user.email}
           />
         </div>
 

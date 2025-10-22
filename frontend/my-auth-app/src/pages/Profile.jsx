@@ -1,9 +1,23 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthProvider'
 import { Link } from 'react-router-dom'
+import AvatarUpload from '../components/AvatarUpload'
 
 export default function Profile() {
   const { user, hasRole } = useAuth()
+  const [avatar, setAvatar] = useState(null)
+
+  useEffect(() => {
+    // Load avatar from localStorage
+    const savedAvatar = localStorage.getItem('userAvatar')
+    if (savedAvatar) {
+      setAvatar(savedAvatar)
+    }
+  }, [])
+
+  const handleAvatarUpload = (newAvatarUrl) => {
+    setAvatar(newAvatarUrl)
+  }
 
   if (!user) {
     return (
@@ -19,6 +33,17 @@ export default function Profile() {
         <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">
           Thông tin cá nhân
         </h2>
+
+        {/* Avatar Upload Section */}
+        <div className="mb-8 p-6 bg-gray-50 rounded-xl border border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-700 mb-4 text-center">
+            Ảnh đại diện
+          </h3>
+          <AvatarUpload 
+            currentAvatar={avatar}
+            onUploadSuccess={handleAvatarUpload}
+          />
+        </div>
 
         <div className="space-y-4 mb-8">
           <div>

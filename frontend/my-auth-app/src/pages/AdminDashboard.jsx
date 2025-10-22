@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthProvider'
+import UserAvatar from '../components/UserAvatar'
 
 export default function AdminDashboard() {
   const { user } = useAuth()
@@ -63,6 +64,7 @@ export default function AdminDashboard() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-gray-100">
+                  <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Avatar</th>
                   <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Tên</th>
                   <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Email</th>
                   <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Role</th>
@@ -72,6 +74,9 @@ export default function AdminDashboard() {
               <tbody>
                 {users.map((u, index) => (
                   <tr key={index} className="hover:bg-gray-50">
+                    <td className="border border-gray-300 px-4 py-3">
+                      <UserAvatar user={u} size="sm" />
+                    </td>
                     <td className="border border-gray-300 px-4 py-3">{u.name}</td>
                     <td className="border border-gray-300 px-4 py-3">{u.email}</td>
                     <td className="border border-gray-300 px-4 py-3">

@@ -10,6 +10,7 @@ const {
   resetPassword
 } = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');
+const { forgotPasswordLimiter } = require('../middleware/rateLimit');
 
 // Public routes
 router.post('/signup', signup);

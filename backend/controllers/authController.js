@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
 
 // ===== Helper function: Tạo JWT tokens =====
@@ -312,21 +313,13 @@ exports.forgotPassword = async (req, res) => {
       });
     }
 
-    // Generate reset token
-    const resetToken = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '10m' }
-    );
-
-    // Save reset token to database
-    user.resetPasswordToken = resetToken;
-    user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+    // Generate secure reset token (plain) and save hashed version in DB
+    const resetToken = user.getResetPasswordToken();
     await user.save();
 
-    // Send email
+    // Send email with plain token in URL
     const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
-    const message = `Click link sau để reset password: ${resetUrl}`;
+    const message = `Click link sau de reset mat khau: ${resetUrl}`;
 
     try {
       await sendEmail({
@@ -340,13 +333,16 @@ exports.forgotPassword = async (req, res) => {
         message: 'Reset password link đã được gửi đến email'
       });
     } catch (emailError) {
+      // Clear reset fields on failure to send email
       user.resetPasswordToken = undefined;
       user.resetPasswordExpire = undefined;
       await user.save();
 
+      console.error('Error sending reset email:', emailError.message || emailError);
       return res.status(500).json({
         success: false,
-        message: 'Lỗi khi gửi email'
+        message: 'Loi khi gui email',
+        error: emailError.message || emailError
       });
     }
   } catch (error) {
@@ -373,11 +369,15 @@ exports.resetPassword = async (req, res) => {
       });
     }
 
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // Hash incoming token and find user with matching hashed token and unexpired
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
-    const user = await User.findById(decoded.id);
-    if (!user || user.resetPasswordToken !== token) {
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpire: { $gt: Date.now() }
+    });
+
+    if (!user) {
       return res.status(400).json({
         success: false,
         message: 'Token không hợp lệ hoặc đã hết hạn'

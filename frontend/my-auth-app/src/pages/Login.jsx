@@ -7,18 +7,33 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [err, setErr] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [rateLimitInfo, setRateLimitInfo] = useState(null)
   const { login } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setErr(null)
+    setRateLimitInfo(null)
     setLoading(true)
     try {
       await login(email, password)
       navigate('/profile')
     } catch (error) {
-      setErr(error?.response?.data?.message || 'Đăng nhập thất bại')
+      // Check for rate limit error (429)
+      if (error?.response?.status === 429) {
+        const retryAfter = error.response.headers['retry-after']
+        const message = error.response.data?.message || 'Quá nhiều lần đăng nhập thất bại. Vui lòng thử lại sau.'
+        
+        setRateLimitInfo({
+          message,
+          retryAfter: retryAfter ? parseInt(retryAfter) : 60,
+          blockedUntil: error.response.data?.blockedUntil
+        })
+        setErr(message)
+      } else {
+        setErr(error?.response?.data?.message || 'Đăng nhập thất bại')
+      }
     } finally {
       setLoading(false)
     }
@@ -69,7 +84,33 @@ export default function Login() {
           </div>
 
           {err && (
-            <p className="text-sm text-red-600 mt-1">{err}</p>
+            <div className={`p-4 rounded-lg text-sm ${
+              rateLimitInfo 
+                ? 'bg-red-50 border-2 border-red-500' 
+                : 'bg-red-50 border border-red-200'
+            }`}>
+              <div className="flex items-start gap-2">
+                <svg className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+                <div className="flex-1">
+                  <p className="text-red-700 font-semibold">{err}</p>
+                  {rateLimitInfo && (
+                    <div className="mt-2 space-y-1">
+                      <p className="text-red-600 text-xs">
+                        🔒 <strong>Tài khoản tạm thời bị khóa</strong>
+                      </p>
+                      <p className="text-red-600 text-xs">
+                        ⏰ Vui lòng đợi <strong>{rateLimitInfo.retryAfter} giây</strong> trước khi thử lại
+                      </p>
+                      <p className="text-red-600 text-xs">
+                        💡 Đây là biện pháp bảo mật chống brute force attack
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           )}
 
           <button

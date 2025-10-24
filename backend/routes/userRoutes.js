@@ -12,4 +12,9 @@ router.get('/profile', protect, getProfile);
 router.put('/profile', protect, updateProfile);
 router.put('/profile/password', protect, changePassword);
 
+// Admin routes for users
+const { getAllUsers, getUserById } = require('../controllers/userController');
+router.get('/', protect, authorize('admin'), getAllUsers);
+router.get('/:id', protect, authorize('admin'), getUserById);
+
 module.exports = router;

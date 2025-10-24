@@ -1,9 +1,19 @@
 import React from 'react'
 import { Navigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthProvider'
+import { useSelector } from 'react-redux'
+import { selectAuth } from '../redux/slices/authSlice'
 
 export default function ProtectedRoute({ children, allowedRoles }) {
-  const { user, loading, hasRole } = useAuth()
+  const { user, loading, isAuthenticated } = useSelector(selectAuth)
+
+  // Helper function to check if user has required role
+  const hasRole = (roles) => {
+    if (!user) return false
+    if (Array.isArray(roles)) {
+      return roles.includes(user.role)
+    }
+    return user.role === roles
+  }
 
   if (loading) {
     return (
@@ -13,7 +23,7 @@ export default function ProtectedRoute({ children, allowedRoles }) {
     )
   }
 
-  if (!user) {
+  if (!isAuthenticated || !user) {
     return <Navigate to="/login" replace />
   }
 

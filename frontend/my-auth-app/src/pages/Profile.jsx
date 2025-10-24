@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from 'react'
-import { useAuth } from '../context/AuthProvider'
+import { useSelector } from 'react-redux'
+import { selectAuth } from '../redux/slices/authSlice'
 import { Link } from 'react-router-dom'
 import AvatarUpload from '../components/AvatarUpload'
 
 export default function Profile() {
-  const { user, hasRole } = useAuth()
+  const { user, isAuthenticated } = useSelector(selectAuth)
   const [avatar, setAvatar] = useState(null)
+
+  // Helper function to check if user has required role
+  const hasRole = (roles) => {
+    if (!user) return false
+    if (Array.isArray(roles)) {
+      return roles.includes(user.role)
+    }
+    return user.role === roles
+  }
 
   useEffect(() => {
     // Load avatar from localStorage theo email
@@ -21,7 +31,7 @@ export default function Profile() {
     setAvatar(newAvatarUrl)
   }
 
-  if (!user) {
+  if (!isAuthenticated || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-xl text-gray-600">Đang tải...</div>

@@ -1,41 +1,46 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { useAuth } from '../context/AuthProvider'
+import { useDispatch, useSelector } from 'react-redux'
+import { loginUser, selectAuth, clearError } from '../redux/slices/authSlice'
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [err, setErr] = useState(null)
-  const [loading, setLoading] = useState(false)
   const [rateLimitInfo, setRateLimitInfo] = useState(null)
-  const { login } = useAuth()
+  
+  const dispatch = useDispatch()
   const navigate = useNavigate()
+  const { loading, error, isAuthenticated } = useSelector(selectAuth)
+
+  useEffect(() => {
+    // Clear error when component unmounts
+    return () => {
+      dispatch(clearError())
+    }
+  }, [dispatch])
+
+  useEffect(() => {
+    // Redirect if already authenticated
+    if (isAuthenticated) {
+      navigate('/profile')
+    }
+  }, [isAuthenticated, navigate])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setErr(null)
     setRateLimitInfo(null)
-    setLoading(true)
+    
     try {
-      await login(email, password)
-      navigate('/profile')
-    } catch (error) {
+      const result = await dispatch(loginUser({ email, password })).unwrap()
+      // Success - will redirect via useEffect
+    } catch (err) {
       // Check for rate limit error (429)
-      if (error?.response?.status === 429) {
-        const retryAfter = error.response.headers['retry-after']
-        const message = error.response.data?.message || 'Quá nhiều lần đăng nhập thất bại. Vui lòng thử lại sau.'
-        
+      if (err?.status === 429 || err?.includes?.('rate limit')) {
         setRateLimitInfo({
-          message,
-          retryAfter: retryAfter ? parseInt(retryAfter) : 60,
-          blockedUntil: error.response.data?.blockedUntil
+          message: err.message || 'Quá nhiều lần đăng nhập thất bại',
+          retryAfter: 60
         })
-        setErr(message)
-      } else {
-        setErr(error?.response?.data?.message || 'Đăng nhập thất bại')
       }
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -83,7 +88,7 @@ export default function Login() {
             </div>
           </div>
 
-          {err && (
+          {error && (
             <div className={`p-4 rounded-lg text-sm ${
               rateLimitInfo 
                 ? 'bg-red-50 border-2 border-red-500' 
@@ -94,7 +99,7 @@ export default function Login() {
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
                 <div className="flex-1">
-                  <p className="text-red-700 font-semibold">{err}</p>
+                  <p className="text-red-700 font-semibold">{error}</p>
                   {rateLimitInfo && (
                     <div className="mt-2 space-y-1">
                       <p className="text-red-600 text-xs">

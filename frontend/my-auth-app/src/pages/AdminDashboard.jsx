@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthProvider'
 import UserAvatar from '../components/UserAvatar'
+import ActivityLog from '../components/ActivityLog'
 
 export default function AdminDashboard() {
   const { user } = useAuth()
   const [users, setUsers] = useState([])
   const [editingUser, setEditingUser] = useState(null)
+  const [activeTab, setActiveTab] = useState('users') // users | logs
 
   useEffect(() => {
     loadUsers()
@@ -45,10 +47,36 @@ export default function AdminDashboard() {
             {" "}(Role: <span className="font-semibold">{user.role}</span>)
           </p>
 
-          <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-6 mb-8 text-white">
-            <h2 className="text-2xl font-bold mb-3">Quyền hạn của Admin</h2>
-            <ul className="space-y-2">
-              <li>✅ Quản lý tất cả người dùng trong hệ thống</li>
+          {/* Tabs */}
+          <div className="flex gap-2 mb-8 border-b-2 border-gray-200">
+            <button
+              onClick={() => setActiveTab('users')}
+              className={`px-6 py-3 font-semibold transition-all ${
+                activeTab === 'users'
+                  ? 'text-purple-600 border-b-4 border-purple-600 -mb-[2px]'
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              👥 Quản lý Users
+            </button>
+            <button
+              onClick={() => setActiveTab('logs')}
+              className={`px-6 py-3 font-semibold transition-all ${
+                activeTab === 'logs'
+                  ? 'text-purple-600 border-b-4 border-purple-600 -mb-[2px]'
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              📊 Activity Logs
+            </button>
+          </div>
+
+          {activeTab === 'users' && (
+            <>
+              <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-6 mb-8 text-white">
+                <h2 className="text-2xl font-bold mb-3">Quyền hạn của Admin</h2>
+                <ul className="space-y-2">
+                  <li>✅ Quản lý tất cả người dùng trong hệ thống</li>
               <li>✅ Thay đổi role của người dùng (User, Moderator, Admin)</li>
               <li>✅ Xóa người dùng khỏi hệ thống</li>
               <li>✅ Xem thống kê và báo cáo hệ thống</li>
@@ -123,6 +151,12 @@ export default function AdminDashboard() {
 
           {users.length === 0 && (
             <p className="text-center text-gray-500 py-8">Chưa có người dùng nào</p>
+          )}
+            </>
+          )}
+
+          {activeTab === 'logs' && (
+            <ActivityLog />
           )}
         </div>
       </div>

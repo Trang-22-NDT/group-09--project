@@ -1,44 +1,52 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../context/AuthProvider";
+import { useDispatch, useSelector } from 'react-redux'
+import { registerUser, selectAuth, clearError } from '../redux/slices/authSlice'
 
 export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [error, setError] = useState("");
+  const [validationError, setValidationError] = useState("");
   const [success, setSuccess] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { signup } = useAuth();
+  
+  const dispatch = useDispatch()
   const navigate = useNavigate();
+  const { loading, error, isAuthenticated } = useSelector(selectAuth)
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearError())
+    }
+  }, [dispatch])
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/profile')
+    }
+  }, [isAuthenticated, navigate])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setValidationError("");
     setSuccess("");
     
     if (password !== confirm) {
-      setError("Mật khẩu không khớp");
+      setValidationError("Mật khẩu không khớp");
       return;
     }
     
     if (password.length < 6) {
-      setError("Mật khẩu phải có ít nhất 6 ký tự");
+      setValidationError("Mật khẩu phải có ít nhất 6 ký tự");
       return;
     }
-
-    setLoading(true);
     try {
-      await signup(name, email, password);
-      setSuccess("Đăng ký thành công! Đang chuyển đến trang đăng nhập...");
-      setTimeout(() => {
-        navigate("/login");
-      }, 1500);
+      await dispatch(registerUser({ name, email, password })).unwrap()
+      setSuccess("Đăng ký thành công! Đang chuyển đến trang profile...");
+      // Will redirect via useEffect
     } catch (err) {
-      setError(err?.response?.data?.message || "Đăng ký thất bại. Vui lòng thử lại!");
-    } finally {
-      setLoading(false);
+      // Error handled by Redux
     }
   };
 
@@ -104,8 +112,8 @@ export default function Signup() {
               onChange={(e) => setConfirm(e.target.value)}
               required
             />
-            {error && (
-              <p className="text-sm text-red-600 mt-1">{error}</p>
+            {(validationError || error) && (
+              <p className="text-sm text-red-600 mt-1">{validationError || error}</p>
             )}
           </div>
 

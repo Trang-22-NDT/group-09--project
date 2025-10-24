@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { useAuth } from '../context/AuthProvider'
+import { useSelector } from 'react-redux'
+import { selectUser } from '../redux/slices/authSlice'
 import UserAvatar from '../components/UserAvatar'
 
 export default function ModeratorDashboard() {
-  const { user } = useAuth()
+  const user = useSelector(selectUser)
   const [users, setUsers] = useState([])
 
   useEffect(() => {

@@ -1,0 +1,46 @@
+[33mf3130809[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/refresh-token[m[33m, [m[1;31morigin/feature/refresh-token[m[33m, [m[1;32mmain[m[33m)[m feat: Implement Refresh Token & Session Management (Hoạt động 1)
+[33m4cd9c431[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge pull request #17 from Trang-22-NDT/backend
+[33m96376430[m Merge pull request #15 from Trang-22-NDT/frontend-profile
+[33m7e5c3da4[m Hoàn thiện giao diện login + profile
+[33m145952a7[m Merge pull request #14 from Trang-22-NDT/frontend-auth
+[33m952c88c7[m[33m ([m[1;31morigin/backend[m[33m)[m Merge pull request #12 from Trang-22-NDT/main
+[33m5c9c0a97[m Merge pull request #13 from Trang-22-NDT/backend
+[33me8d7f5dd[m Cập nhật README.md hoàn chỉnh cho nhánh backend
+[33m2485b14a[m Resolve conflict when merging backend into main
+[33mcd9a7dd6[m Cập nhật code backend
+[33m343ff7c2[m Backend: thêm App.js
+[33ma2fbef8b[m Thêm App.js cho frontend
+[33m05de478e[m Khởi tạo nhánh Frontend - cập nhật README
+[33mdf27d21f[m Lưu thay đổi app.js trước khi sang frontend
+[33mb284253a[m Thêm app.js cho backend
+[33m97438812[m Merge pull request #11 from Trang-22-NDT/frontend
+[33mc518767f[m[33m ([m[1;31morigin/frontend-auth[m[33m)[m Resolve xung đột trong App.js
+[33m8b79c162[m Thêm log backend trong App.js
+[33m3e97fd02[m[33m ([m[1;31morigin/frontend[m[33m)[m Resolve xung đột merge backend vào frontend
+[33mc552f548[m Cập nhật App.js trong frontend
+[33m5e368b97[m Cập nhật App.js trong backend
+[33m01d18b46[m Merge pull request #10 from Trang-22-NDT/frontend
+[33mf690fbca[m Test squash commit
+[33m2e77353e[m Khôi phục thay đổi sau khi stash pop
+[33m176c7f14[m Merge pull request #9 from Trang-22-NDT/main
+[33m274a8320[m Merge pull request #7 from Trang-22-NDT/frontend
+[33m037a5230[m Thêm validation form và quản lý state nâng cao
+[33m05584726[m Merge pull request #8 from Trang-22-NDT/main
+[33m5ea3d7ce[m Thêm component AddUser và cập nhật App.js với state nâng cao + validation
+[33m7b1b6780[m Hoàn thành hoạt động 6 - Kết nối frontend với API backend port 5000
+[33mf1cd988a[m Delete REAME-Trang.md
+[33m77a0fbcb[m Thêm API PUT/DELETE cho User
+[33mcc5e7293[m Merge pull request #5 from Trang-22-NDT/frontend
+[33mc336c040[m Hoàn thành kết nối frontend với MongoDB
+[33mb0ed0a0a[m Merge pull request #2 from Trang-22-NDT/frontend
+[33m3ea76759[m Resolve merge conflict and keep README.md
+[33mf480767a[m Merge pull request #4 from Trang-22-NDT/main
+[33md59f5cac[m Merge pull request #3 from Trang-22-NDT/backend
+[33m3d131367[m Merge branch 'backend' of https://github.com/Trang-22-NDT/group-09--project into backend :wq
+[33m4c630467[m Thêm API GET/POST users
+[33m840a1550[m Delete README-Trang.md
+[33me5abd5d8[m Khởi tạo nhánh Frontend - cập nhật README
+[33m4f98b5f8[m Cập nhật README-Trang.md: thêm phân công nhóm
+[33m99367d7e[m Đổi tên README.md thành README-Trang.md
+[33m778b10fc[m Cập nhật README.md: thêm phân công nhóm
+[33m0c059d7a[m Initial commit

@@ -18,6 +18,8 @@ app.use(cookieParser());
 // ===== ROUTES =====
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
+// Admin routes (logs)
+app.use('/api/admin', require('./routes/adminRoutes'));
 
 // ===== HEALTH CHECK =====
 app.get('/', (req, res) => {

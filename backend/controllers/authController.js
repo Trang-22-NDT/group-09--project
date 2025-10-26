@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
+const logActivity = require('../utils/logActivity');
 
 // ===== Helper function: Tạo JWT tokens =====
 const generateTokens = async (user) => {
@@ -70,6 +72,9 @@ exports.signup = async (req, res) => {
       name: user.name
     });
 
+    // Log activity
+    await logActivity({ user: user._id, action: 'signup', req, meta: { email: user.email } });
+
     res.status(201).json({
       success: true,
       message: 'Đăng ký thành công',
@@ -102,6 +107,7 @@ exports.login = async (req, res) => {
 
     // Validate
     if (!email || !password) {
+      await logActivity({ user: null, action: 'login:failed', req, meta: { reason: 'missing_fields' } });
       return res.status(400).json({
         success: false,
         message: 'Vui lòng nhập email và mật khẩu'
@@ -111,6 +117,7 @@ exports.login = async (req, res) => {
     // Check user exists
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
+      await logActivity({ user: null, action: 'login:failed', req, meta: { reason: 'user_not_found', email } });
       return res.status(401).json({
         success: false,
         message: 'Email hoặc mật khẩu không đúng'
@@ -120,6 +127,7 @@ exports.login = async (req, res) => {
     // Check password
     const isPasswordMatch = await user.matchPassword(password);
     if (!isPasswordMatch) {
+      await logActivity({ user: user._id, action: 'login:failed', req, meta: { reason: 'wrong_password' } });
       return res.status(401).json({
         success: false,
         message: 'Email hoặc mật khẩu không đúng'
@@ -133,6 +141,8 @@ exports.login = async (req, res) => {
       userId: user._id,
       email: user.email
     });
+
+    await logActivity({ user: user._id, action: 'login:success', req, meta: { ip: req.ip } });
 
     res.status(200).json({
       success: true,
@@ -219,6 +229,8 @@ exports.refreshToken = async (req, res) => {
       newAccessToken: newAccessToken.slice(0, 20) + '...'
     });
 
+    await logActivity({ user: user._id, action: 'token:refreshed', req, meta: {} });
+
     res.status(200).json({
       success: true,
       message: 'Refresh token thành công',
@@ -262,6 +274,8 @@ exports.logout = async (req, res) => {
       userId: user._id,
       email: user.email
     });
+
+    await logActivity({ user: user._id, action: 'logout', req, meta: {} });
 
     res.status(200).json({
       success: true,
@@ -312,21 +326,13 @@ exports.forgotPassword = async (req, res) => {
       });
     }
 
-    // Generate reset token
-    const resetToken = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '10m' }
-    );
-
-    // Save reset token to database
-    user.resetPasswordToken = resetToken;
-    user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+    // Generate secure reset token (plain) and save hashed version in DB
+    const resetToken = user.getResetPasswordToken();
     await user.save();
 
-    // Send email
+    // Send email with plain token in URL
     const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
-    const message = `Click link sau để reset password: ${resetUrl}`;
+    const message = `Click link sau de reset mat khau: ${resetUrl}`;
 
     try {
       await sendEmail({
@@ -335,18 +341,25 @@ exports.forgotPassword = async (req, res) => {
         message
       });
 
+      // Log that reset email was sent
+      await logActivity({ user: user._id, action: 'forgot-password:sent', req, meta: { email: user.email } });
+
       res.status(200).json({
         success: true,
         message: 'Reset password link đã được gửi đến email'
       });
     } catch (emailError) {
+      // Clear reset fields on failure to send email
       user.resetPasswordToken = undefined;
       user.resetPasswordExpire = undefined;
       await user.save();
 
+      console.error('Error sending reset email:', emailError.message || emailError);
+      await logActivity({ user: user._id, action: 'forgot-password:failed', req, meta: { error: emailError.message } });
       return res.status(500).json({
         success: false,
-        message: 'Lỗi khi gửi email'
+        message: 'Loi khi gui email',
+        error: emailError.message || emailError
       });
     }
   } catch (error) {
@@ -373,11 +386,17 @@ exports.resetPassword = async (req, res) => {
       });
     }
 
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // Hash incoming token and find user with matching hashed token and unexpired
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
-    const user = await User.findById(decoded.id);
-    if (!user || user.resetPasswordToken !== token) {
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpire: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      // log failed reset attempt
+      await logActivity({ user: null, action: 'reset-password:failed', req, meta: { reason: 'invalid_or_expired_token' } });
       return res.status(400).json({
         success: false,
         message: 'Token không hợp lệ hoặc đã hết hạn'
@@ -389,6 +408,8 @@ exports.resetPassword = async (req, res) => {
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
     await user.save();
+
+    await logActivity({ user: user._id, action: 'reset-password:success', req, meta: {} });
 
     res.status(200).json({
       success: true,
